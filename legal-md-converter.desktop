@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Lentera MD
+Comment=Lentera MD — Convert Indonesian legal documents to Markdown
+Exec=lentera-md %F
+Icon=lentera-md
+Terminal=false
+Type=Application
+Categories=Office;Utility;
+MimeType=application/pdf;text/plain;application/vnd.openxmlformats-officedocument.wordprocessingml.document;
+Keywords=legal;document;markdown;converter;indonesia;hukum;lentera;
+StartupWMClass=LenteraMD

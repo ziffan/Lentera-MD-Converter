@@ -1,0 +1,5 @@
+[console_scripts]
+legal-md-converter = legal_md_converter.main:main
+
+[gui_scripts]
+legal-md-converter-gui = legal_md_converter.main:main

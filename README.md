@@ -1,0 +1,202 @@
+# Lentera MD
+
+A cross-platform desktop application for converting legal documents to Markdown format.
+
+## Features
+
+- **Multi-format Support**: Convert PDF, DOCX, DOC, RTF, and TXT files to Markdown
+- **Drag & Drop Interface**: Easy file loading with drag-and-drop support
+- **Real-time Preview**: View converted Markdown content instantly
+- **Batch Processing**: Convert multiple documents at once
+- **Cross-Platform**: Runs on Windows, macOS, and Linux
+- **KBBI Integration**: Indonesian dictionary support for legal term validation (planned)
+
+## Requirements
+
+- Python 3.10 or higher
+- PySide6 >= 6.6.0
+- Docling >= 1.0.0
+
+## Installation
+
+### From Source
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd lentera-md
+
+# Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -e .
+
+# Run the application
+python -m legal_md_converter.main
+```
+
+### Development Installation
+
+```bash
+# Install with development dependencies
+pip install -e ".[dev]"
+```
+
+## Usage
+
+1. **Launch the application**:
+   ```bash
+   lentera-md
+   ```
+
+2. **Add documents**:
+   - Drag and drop files onto the application window
+   - Click "Add Files..." to browse for documents
+   - Use File > Open Files or File > Open Folder
+
+3. **Convert to Markdown**:
+   - Click "Convert to Markdown" in the toolbar
+   - View the converted content in the preview panel
+
+4. **Export**:
+   - Click "Save Markdown" to save to a file
+   - Click "Copy to Clipboard" to copy the content
+
+## Supported Formats
+
+| Format | Extension | Support Level |
+|--------|-----------|---------------|
+| PDF | .pdf | Full (with OCR) |
+| Word | .docx, .doc | Full |
+| Rich Text | .rtf | Full |
+| Plain Text | .txt | Full |
+
+## Project Structure
+
+```
+lentera-md/
+├── src/
+│   └── legal_md_converter/
+│       ├── __init__.py
+│       ├── main.py                 # Application entry point
+│       ├── ui/
+│       │   ├── __init__.py
+│       │   ├── main_window.py      # Main application window
+│       │   ├── widgets/
+│       │   │   ├── __init__.py
+│       │   │   ├── file_drop_widget.py    # Drag-and-drop file widget
+│       │   │   └── document_preview.py    # Markdown preview widget
+│       │   └── styles/
+│       │       ├── __init__.py
+│       │       └── app_theme.py           # Application theming
+│       ├── engine/
+│       │   ├── __init__.py
+│       │   └── document_parser.py  # Document conversion engine
+│       ├── data/
+│       │   ├── __init__.py
+│       │   └── kbbi_database.py    # KBBI dictionary integration
+│       └── utils/
+│           ├── __init__.py
+│           └── thread_worker.py    # Threading utilities
+├── tests/
+│   └── test_ui.py                  # UI tests
+├── pyproject.toml
+└── README.md
+```
+
+## Development
+
+### Running Tests
+
+```bash
+pytest tests/
+```
+
+### Code Formatting
+
+```bash
+# Format code with Black
+black src/ tests/
+
+# Lint with Ruff
+ruff check src/ tests/
+```
+
+### Building Executables
+
+```bash
+# Install PyInstaller
+pip install pyinstaller
+
+# Build executable
+pyinstaller LenteraMD.spec
+
+# The executable will be in the dist/ folder
+```
+
+## Architecture
+
+### UI Layer (PySide6)
+- **MainWindow**: Primary application window with menus and toolbars
+- **FileDropWidget**: Drag-and-drop interface for file management
+- **DocumentPreview**: Markdown content display and editing
+- **AppTheme**: Centralized styling and theming
+
+### Engine Layer
+- **DocumentParser**: Handles document conversion using Docling
+- Supports multiple input formats with OCR capabilities
+
+### Data Layer
+- **KBBIDatabase**: Indonesian dictionary integration for legal term validation
+- Planned: Legal terminology database and standardization
+
+### Utilities
+- **ThreadWorker**: Background processing to keep UI responsive
+- Cross-platform path handling with pathlib
+
+## Roadmap
+
+### Phase 1 (Current) ✅
+- [x] Project setup and structure
+- [x] PySide6 UI foundation
+- [x] Document parser integration
+- [x] Basic theming and styling
+- [x] Cross-platform compatibility
+
+### Phase 2 (Planned)
+- [ ] Full document conversion implementation
+- [ ] KBBI database integration
+- [ ] Advanced Markdown editing
+- [ ] Export options (PDF, HTML, etc.)
+- [ ] Batch processing queue
+
+### Phase 3 (Future)
+- [ ] Legal citation detection
+- [ ] Document structure analysis
+- [ ] Custom templates
+- [ ] Cloud sync capabilities
+- [ ] Plugin system
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [Docling](https://github.com/DS4SD/docling) for document conversion
+- [PySide6](https://www.qt.io/product/development-tools) for the UI framework
+- KBBI for Indonesian dictionary standards
+
+## Support
+
+For issues, questions, or contributions, please open an issue on GitHub.
