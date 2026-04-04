@@ -1,286 +1,120 @@
-# Lentera MD — Panduan Penggunaan / User Guide
+# Lentera MD — Panduan Penggunaan
 
-> **Versi:** 1.0.0
+> **Versi:** 1.0.0  
 > **Platform:** Windows 10+, macOS 10.15+, Ubuntu 22.04+
-> **Bahasa / Language:** English 🇬🇧 & Bahasa Indonesia 🇮🇩
 
 ---
 
-## Table of Contents / Daftar Isi
+## Daftar Isi
 
-1. [System Requirements / Persyaratan Sistem](#1-system-requirements--persyaratan-sistem)
-2. [Prerequisites / Prasyarat](#2-prerequisites--prasyarat)
-3. [Installation Guide / Panduan Instalasi](#3-installation-guide--panduan-instalasi)
-4. [Using the Application / Menggunakan Aplikasi](#4-using-the-application--menggunakan-aplikasi)
-5. [Troubleshooting / Penyelesaian Masalah](#5-troubleshooting--penyelesaian-masalah)
+1. [Persyaratan Sistem](#1-persyaratan-sistem)
+2. [Instalasi Windows (Installer .exe)](#2-instalasi-windows-installer-exe)
+3. [Instalasi dari Kode Sumber](#3-instalasi-dari-kode-sumber)
+4. [Menjalankan Aplikasi](#4-menjalankan-aplikasi)
+5. [Panduan Penggunaan](#5-panduan-penggunaan)
+6. [Pemeriksaan Ejaan](#6-pemeriksaan-ejaan)
+7. [Menyimpan Hasil](#7-menyimpan-hasil)
+8. [Pengaturan](#8-pengaturan)
+9. [Tentang & Dukungan](#9-tentang--dukungan)
+10. [Penyelesaian Masalah](#10-penyelesaian-masalah)
 
 ---
 
-## 1. System Requirements / Persyaratan Sistem
-
-### English 🇬🇧
-
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| **OS** | Windows 10 / macOS 10.15 / Ubuntu 22.04 | Windows 11 / macOS 13 / Ubuntu 24.04 |
-| **CPU** | 4 cores (x86_64) | 8 cores (x86_64 or Apple Silicon) |
-| **RAM** | 4 GB | 8 GB |
-| **Disk Space** | 2 GB free | 4 GB free |
-| **Python** | 3.10 | 3.12 |
-| **Display** | 1280×720 | 1920×1080 |
-| **Network** | Required (first run only, for model download) | — |
-
-> **Note:** First run downloads OCR models (~50 MB). Subsequent runs work offline.
-
-### Bahasa Indonesia 🇮🇩
+## 1. Persyaratan Sistem
 
 | Komponen | Minimum | Rekomendasi |
 |----------|---------|-------------|
-| **Sistem Operasi** | Windows 10 / macOS 10.15 / Ubuntu 22.04 | Windows 11 / macOS 13 / Ubuntu 24.04 |
-| **Prosesor** | 4 core (x86_64) | 8 core (x86_64 atau Apple Silicon) |
-| **RAM** | 4 GB | 8 GB |
-| **Penyimpanan** | 2 GB kosong | 4 GB kosong |
-| **Python** | 3.10 | 3.12 |
-| **Layar** | 1280×720 | 1920×1080 |
-| **Jaringan** | Diperlukan (hanya pertama kali, untuk unduh model) | — |
+| Sistem Operasi | Windows 10 / macOS 10.15 / Ubuntu 22.04 | Windows 11 / macOS 13 / Ubuntu 24.04 |
+| Prosesor | 4 core x86_64 | 8 core |
+| RAM | 4 GB | 8 GB |
+| Penyimpanan | 2 GB kosong (+ ~500 MB model AI) | 4 GB kosong |
+| Layar | 1280×720 | 1920×1080 |
+| Internet | Diperlukan saat pertama kali memproses PDF | Tidak diperlukan setelahnya |
 
-> **Catatan:** Pertama kali menjalankan aplikasi akan mengunduh model OCR (~50 MB). Setelahnya bisa berjalan offline.
-
----
-
-## 2. Prerequisites / Prasyarat
-
-### English 🇬🇧
-
-**Required System Packages (Linux only):**
-
-```bash
-# Ubuntu/Debian
-sudo apt install python3-venv python3-pip
-
-# Fedora/RHEL
-sudo dnf install python3-pip python3-devel
-
-# Optional (for better OCR results)
-sudo apt install tesseract-ocr tesseract-ocr-ind
-```
-
-**Python Version Check:**
-```bash
-python3 --version
-# Must show Python 3.10 or higher
-```
-
-### Bahasa Indonesia 🇮🇩
-
-**Paket Sistem yang Diperlukan (hanya Linux):**
-
-```bash
-# Ubuntu/Debian
-sudo apt install python3-venv python3-pip
-
-# Fedora/RHEL
-sudo dnf install python3-pip python3-devel
-
-# Opsional (untuk hasil OCR lebih baik)
-sudo apt install tesseract-ocr tesseract-ocr-ind
-```
-
-**Cek Versi Python:**
-```bash
-python3 --version
-# Harus menunjukkan Python 3.10 atau lebih tinggi
-```
+> **Catatan:** Saat pertama kali memproses PDF, Docling mengunduh model AI (~50–500 MB) dari HuggingFace. Proses ini hanya terjadi sekali dan disimpan di cache. Setelah itu aplikasi berjalan sepenuhnya offline.
 
 ---
 
-## 3. Installation Guide / Panduan Instalasi
+## 2. Instalasi Windows (Installer .exe)
 
-### Method A: From Source / Dari Sumber (Developer)
+Cara termudah menggunakan Lentera MD di Windows adalah melalui installer yang sudah jadi.
 
-#### English 🇬🇧
+### Langkah 1 — Unduh Installer
 
-**Step 1: Clone the Repository**
+Unduh file `LenteraMD_Setup_1.0.0.exe` dari halaman [Releases](https://github.com/ziffan/Lentera-MD-Converter/releases).
+
+### Langkah 2 — Jalankan Installer
+
+1. Klik dua kali file installer
+2. Ikuti petunjuk instalasi
+3. Pilih lokasi instalasi (default: folder pengguna, tidak perlu hak admin)
+4. Centang **"Buat ikon di Desktop"** jika ingin shortcut di Desktop
+5. Klik **Install**
+
+### Langkah 3 — Jalankan Aplikasi
+
+Klik shortcut **Lentera MD** di Desktop atau Start Menu.
+
+### Tentang Jendela Terminal
+
+Saat aplikasi dibuka, sebuah **jendela terminal (command prompt) akan muncul** bersamaan dengan jendela utama aplikasi. Ini adalah hal **normal** — terminal menampilkan log aktivitas aplikasi.
+
+> **Jangan tutup jendela terminal** selama aplikasi masih digunakan. Terminal akan tertutup otomatis saat aplikasi ditutup.
+>
+> Jika terjadi error, tutup dan buka kembali aplikasi. Jika masalah berlanjut, laporkan di [GitHub Issues](https://github.com/ziffan/Lentera-MD-Converter/issues).
+
+### Pertama Kali Memproses PDF
+
+Pada percobaan konversi PDF pertama, aplikasi akan mengunduh model AI layout (~170 MB) dari HuggingFace. Proses ini membutuhkan koneksi internet dan bisa memakan waktu beberapa menit tergantung kecepatan internet. Setelah selesai, model disimpan di cache dan tidak perlu diunduh lagi.
+
+---
+
+## 3. Instalasi dari Kode Sumber
+
+Untuk pengembang atau pengguna yang ingin menjalankan dari source code.
+
+### Prasyarat
+
+- Python 3.10 atau lebih baru
+- Git
+
+### Langkah 1 — Clone Repository
+
 ```bash
-git clone <repository-url>
-cd lentera-md
+git clone https://github.com/ziffan/Lentera-MD-Converter
+cd Lentera-MD-Converter
 ```
 
-**Step 2: Create Virtual Environment**
+### Langkah 2 — Buat Virtual Environment
+
 ```bash
-python3 -m venv venv
-source venv/bin/activate    # Linux/macOS
-# or
-venv\Scripts\activate       # Windows
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux / macOS
+source venv/bin/activate
 ```
 
-**Step 3: Install PyTorch (CPU-only to avoid 2GB+ CUDA download)**
+### Langkah 3 — Install PyTorch (CPU-only)
+
+Langkah ini penting untuk menghindari pengunduhan PyTorch versi CUDA (~2 GB).
+
 ```bash
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
-**Step 4: Install Dependencies**
-```bash
-# Production only
-pip install -e .
+### Langkah 4 — Install Semua Dependensi
 
-# Production + development tools
+```bash
 pip install -e ".[dev]"
 ```
 
-**Step 5: Fix torchvision if needed**
-```bash
-# Only if you get "operator torchvision::nms does not exist"
-pip uninstall -y torchvision
-pip install torchvision --index-url https://download.pytorch.org/whl/cpu
-```
+### Langkah 5 — Perbaiki torchvision (jika perlu)
 
-**Step 6: Run the Application**
-```bash
-python -m legal_md_converter.main
-```
+Hanya jika muncul error `operator torchvision::nms does not exist`:
 
-#### Bahasa Indonesia 🇮🇩
-
-**Langkah 1: Clone Repository**
-```bash
-git clone <repository-url>
-cd lentera-md
-```
-
-**Langkah 2: Buat Virtual Environment**
-```bash
-python3 -m venv venv
-source venv/bin/activate    # Linux/macOS
-# atau
-venv\Scripts\activate       # Windows
-```
-
-**Langkah 3: Install PyTorch (versi CPU-only agar tidak unduh CUDA ~2GB)**
-```bash
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-```
-
-**Langkah 4: Install Dependensi**
-```bash
-# Hanya produksi
-pip install -e .
-
-# Produksi + alat pengembangan
-pip install -e ".[dev]"
-```
-
-**Langkah 5: Perbaiki torchvision jika perlu**
-```bash
-# Hanya jika muncul error "operator torchvision::nms does not exist"
-pip uninstall -y torchvision
-pip install torchvision --index-url https://download.pytorch.org/whl/cpu
-```
-
-**Langkah 6: Jalankan Aplikasi**
-```bash
-python -m legal_md_converter.main
-```
-
----
-
-### Method B: From Executable / Dari File Eksekusi
-
-#### English 🇬🇧
-
-**Linux (.deb):**
-```bash
-sudo dpkg -i lentera-md_1.0.0_amd64.deb
-lentera-md
-```
-
-**macOS (.dmg):**
-1. Open `LenteraMD.dmg`
-2. Drag `LenteraMD.app` to Applications folder
-3. Launch from Applications (or Spotlight)
-
-**Windows (.exe):**
-1. Run the installer or executable
-2. Launch from Start Menu or Desktop shortcut
-
----
-
-## 4. Using the Application / Menggunakan Aplikasi
-
-### English 🇬🇧
-
-**Convert a Document:**
-1. Launch Lentera MD
-2. Drag & drop a PDF/DOCX/TXT file onto the left panel (or click "Add Files...")
-3. Click "Convert to Markdown" in the toolbar
-4. Wait for parsing to complete (progress bar shows status)
-5. View the converted markdown in the right panel
-6. Click "Save Markdown" to export, or "Copy to Clipboard"
-
-**Check Spelling:**
-1. After conversion, the spell check panel opens automatically
-2. Select a typo from the list
-3. Choose a suggestion from the dropdown
-4. Click "Ganti" (Replace), "Abaikan" (Ignore), or "Tambah ke Kamus" (Add to Dictionary)
-
-**Export with Template:**
-1. Click "Export Markdown..." in the File menu
-2. Choose format (Markdown, HTML, or Plain Text)
-3. Choose template (Legal, Academic, or Basic)
-4. Select output location
-5. Click "Ekspor"
-
-#### Bahasa Indonesia 🇮🇩
-
-**Mengonversi Dokumen:**
-1. Buka Lentera MD
-2. Drag & drop file PDF/DOCX/TXT ke panel kiri (atau klik "Add Files...")
-3. Klik "Convert to Markdown" di toolbar
-4. Tunggu proses parsing selesai (progress bar menunjukkan status)
-5. Lihat hasil konversi markdown di panel kanan
-6. Klik "Save Markdown" untuk ekspor, atau "Copy to Clipboard"
-
-**Memeriksa Ejaan:**
-1. Setelah konversi, panel pemeriksaan ejaan terbuka otomatis
-2. Pilih salah satu typo dari daftar
-3. Pilih saran dari dropdown
-4. Klik "Ganti" (Replace), "Abaikan" (Ignore), atau "Tambah ke Kamus" (Add to Dictionary)
-
-**Ekspor dengan Template:**
-1. Klik "Export Markdown..." di menu File
-2. Pilih format (Markdown, HTML, atau Plain Text)
-3. Pilih template (Legal, Akademik, atau Dasar)
-4. Pilih lokasi output
-5. Klik "Ekspor"
-
----
-
-## 5. Troubleshooting / Penyelesaian Masalah
-
-### English 🇬🇧
-
-#### Problem: `InputFormat has no attribute TXT`
-
-**Cause:** Old version of code or outdated installation.
-**Solution:**
-```bash
-# Reinstall from source
-pip install -e . --force-reinstall --no-deps
-```
-
----
-
-#### Problem: `PdfPipelineOptions object has no attribute 'ocr_lang'`
-
-**Cause:** Using old code with new docling version.
-**Solution:** Update to the latest version. The fix changes `ocr_lang` → `ocr_options.lang`.
-
----
-
-#### Problem: `torchvision::nms does not exist`
-
-**Cause:** `torchvision` version doesn't match `torch` version (CUDA vs CPU).
-**Solution:**
 ```bash
 pip uninstall -y torchvision
 pip install torchvision --index-url https://download.pytorch.org/whl/cpu
@@ -288,114 +122,154 @@ pip install torchvision --index-url https://download.pytorch.org/whl/cpu
 
 ---
 
-#### Problem: `AttributeError: 'PdfPipelineOptions' object has no attribute 'backend'`
+## 4. Menjalankan Aplikasi
 
-**Cause:** Docling API changed — `format_options` must use `PdfFormatOption`.
-**Solution:** Update to the latest code. The fix wraps options with `PdfFormatOption(pipeline_options=...)`.
+### Dari Installer (Windows)
 
----
+Klik shortcut **Lentera MD** di Desktop atau Start Menu.
 
-#### Problem: `Unsupported format: .docx`
+### Dari Kode Sumber
 
-**Cause:** Missing handler for DOCX files.
-**Solution:** Update to the latest code. The fix adds `parse_generic()` method for non-PDF formats.
-
----
-
-#### Problem: Table export crashes with `TypeError: sequence item 1: expected str instance, list found`
-
-**Cause:** PDF contains tables with nested/merged cells.
-**Solution:** Update to the latest code. The fix adds `cell_str()` helper to flatten nested values.
-
----
-
-#### Problem: Template output contains literal `{{ title }}` instead of actual values
-
-**Cause:** Template rendering engine mismatch.
-**Solution:** Update to the latest code. The fix replaces `string.Template` with direct `str.replace()`.
-
----
-
-#### Problem: Spellcheck shows thousands of "Bloom filter library not available" messages
-
-**Cause:** `bloom_filter2` package not installed, causing log spam.
-**Solution:** Fixed in latest version. Now logs only once at DEBUG level. To install the library (optional, for faster spellcheck):
 ```bash
-pip install bloom_filter2
+# Windows
+venv\Scripts\python src\legal_md_converter\main.py
+
+# Linux / macOS
+venv/bin/python src/legal_md_converter/main.py
 ```
 
----
-
-#### Problem: Application window doesn't appear
-
-**Check:**
-```bash
-# 1. Is Python running?
-python3 --version
-
-# 2. Is PySide6 installed?
-python3 -c "from PySide6.QtWidgets import QApplication; print('OK')"
-
-# 3. Run with verbose logging
-python -m legal_md_converter.main 2>&1 | head -20
-```
-
-**Common fixes:**
-- On Wayland: `export QT_QPA_PLATFORM=wayland`
-- On headless server: Requires X11/Wayland display
+Aplikasi akan terbuka dengan tampilan dua panel:
+- **Panel kiri** — daftar file yang akan dikonversi
+- **Panel kanan** — hasil konversi Markdown (dapat diedit langsung)
 
 ---
 
-#### Problem: Parsing is very slow (3+ minutes)
+## 5. Panduan Penggunaan
 
-**Cause:** First run downloads OCR models (~50 MB). Subsequent runs are faster.
-**Solution:** Wait for first run to complete. Models are cached for future use. For text-based PDFs (not scanned), parsing should be under 5 seconds.
+### Menambahkan Dokumen
 
----
+Ada tiga cara menambahkan file:
 
-#### Problem: Spellcheck doesn't find any errors
+1. **Drag & Drop** — seret file dari Explorer langsung ke panel kiri
+2. **Menu File → Open Files...** (Ctrl+O) — pilih satu atau beberapa file
+3. **Menu File → Open Folder...** — pilih folder, semua dokumen yang didukung akan dimuat
 
-**Possible causes:**
-1. KBBI database not found → Check `assets/kbbi/kbbi.db` exists (should be 4.3 MB, 71,093 words)
-2. Document not converted yet → Spellcheck only works on converted markdown
-3. Text is already correct → No typos to find!
+**Format yang didukung:** PDF, DOCX, DOC, RTF, TXT
 
-**Verify:**
-```bash
-python3 -c "
-from legal_md_converter.engine.document_service import DocumentService
-svc = DocumentService()
-print(f'Spellchecker ready: {svc.is_spell_checker_ready()}')
-svc.close()
-"
-```
+### Mengonversi Dokumen
 
----
+1. Setelah file ditambahkan, klik **Convert to Markdown** di toolbar atau tekan **Ctrl+Enter**
+2. Jendela progres terbuka dan menampilkan log konversi secara *live*
+3. Setelah selesai, hasil konversi tampil di panel kanan
 
-### Bahasa Indonesia 🇮🇩
+> **Pertama kali konversi PDF:** Aplikasi mengunduh model AI (~170–500 MB). Tunggu hingga selesai — proses berikutnya jauh lebih cepat.
 
-#### Masalah: `InputFormat tidak punya atribut TXT`
+### Jika Konversi Gagal
 
-**Penyebab:** Versi kode lama atau instalasi usang.
-**Solusi:**
-```bash
-# Install ulang dari sumber
-pip install -e . --force-reinstall --no-deps
-```
+- Jendela progres menampilkan pesan error berwarna merah
+- Klik tombol **Tutup** atau **Cancel** untuk menutup jendela progres
+- Periksa apakah file tidak rusak dan format didukung
+- Coba lagi — jika gagal karena download model terputus, coba sekali lagi
+
+### Mengedit Hasil Konversi
+
+Panel kanan adalah editor teks — kamu bisa:
+- Mengetik dan mengedit langsung
+- Memperbaiki kesalahan formatting
+- Menghapus teks yang tidak diinginkan (header/footer, nomor halaman, dll.)
 
 ---
 
-#### Masalah: `PdfPipelineOptions tidak punya field 'ocr_lang'`
+## 6. Pemeriksaan Ejaan
 
-**Penyebab:** Menggunakan kode lama dengan versi docling baru.
-**Solusi:** Perbarui ke versi terbaru. Fix mengubah `ocr_lang` → `ocr_options.lang`.
+Setelah konversi selesai, panel **Pemeriksaan Ejaan** otomatis terbuka (jika diaktifkan di Pengaturan).
+
+### Cara Menggunakan Panel Ejaan
+
+1. Daftar kata bermasalah muncul di panel kanan (dock)
+2. **Klik salah satu kata** → kursor di panel preview langsung melompat ke posisi kata tersebut
+3. Pilih saran perbaikan dari dropdown **Saran Perbaikan**
+4. Gunakan tombol:
+   - **Ganti** — ganti dengan saran yang dipilih
+   - **Abaikan** — lewati kata ini satu kali
+   - **Abaikan Semua** — lewati semua kemunculan kata yang sama
+   - **Tambah ke Kamus** — simpan ke kamus pengguna (tidak akan ditandai lagi)
+
+### Menjalankan Ejaan Manual
+
+- Menu **Tools → Spell Check**
+- Atau aktifkan opsi *"Periksa ejaan otomatis"* di panel Pengaturan
+
+> **Catatan:** Pemeriksaan ejaan menggunakan KBBI dengan 71.093 kata. Kata teknis, nama orang, atau singkatan mungkin ditandai — gunakan **Tambah ke Kamus** untuk menyimpannya.
 
 ---
 
-#### Masalah: `torchvision::nms does not exist`
+## 7. Menyimpan Hasil
 
-**Penyebab:** Versi `torchvision` tidak cocok dengan `torch` (CUDA vs CPU).
-**Solusi:**
+### Save Markdown (Ctrl+S)
+
+1. Klik **File → Save Markdown...** atau tekan **Ctrl+S**
+2. Pilih lokasi dan nama file
+3. Klik Simpan
+
+Tombol **Save Markdown** juga tersedia di bagian atas panel preview.
+
+### Copy to Clipboard
+
+Klik tombol **Copy to Clipboard** di panel preview untuk menyalin seluruh isi ke clipboard.
+
+---
+
+## 8. Pengaturan
+
+Buka panel pengaturan melalui **View → Settings Panel**.
+
+| Pengaturan | Keterangan |
+|------------|------------|
+| Aktifkan OCR | Hidupkan/matikan OCR untuk PDF hasil scan |
+| Bahasa OCR | Indonesia + Inggris (default) |
+| Template default | Legal / Akademik / Dasar |
+| Periksa ejaan otomatis | Jalankan spellcheck otomatis setelah konversi |
+| Lewati singkatan | Abaikan hlm., dst., dll. saat cek ejaan |
+| Lewati bilangan tingkat | Abaikan ke-1, ke-2, dsb. |
+
+---
+
+## 9. Tentang & Dukungan
+
+Buka **Help → About** untuk melihat:
+
+- Logo dan versi aplikasi
+- Tautan GitHub: https://github.com/ziffan/Lentera-MD-Converter
+- Donasi via Saweria: https://saweria.co/kampusmerahdeveloper
+- Donasi via Ko-fi: https://ko-fi.com/kampusmerahdev
+- Peringatan penggunaan hasil OCR
+
+---
+
+## 10. Penyelesaian Masalah
+
+### Konversi PDF sangat lambat (3+ menit pertama kali)
+
+**Penyebab:** Docling mengunduh model AI (~170–500 MB) dari HuggingFace.  
+**Solusi:** Tunggu hingga selesai. Run berikutnya jauh lebih cepat karena model sudah di-cache.
+
+---
+
+### Konversi gagal dengan error di jendela progres
+
+**Langkah:**
+1. Klik **Tutup** di jendela progres
+2. Tutup aplikasi sepenuhnya
+3. Buka kembali aplikasi
+4. Coba konversi ulang
+
+Jika masalah berlanjut, laporkan di: https://github.com/ziffan/Lentera-MD-Converter/issues
+
+---
+
+### `operator torchvision::nms does not exist`
+
 ```bash
 pip uninstall -y torchvision
 pip install torchvision --index-url https://download.pytorch.org/whl/cpu
@@ -403,100 +277,46 @@ pip install torchvision --index-url https://download.pytorch.org/whl/cpu
 
 ---
 
-#### Masalah: `AttributeError: 'PdfPipelineOptions' object has no attribute 'backend'`
-
-**Penyebab:** API Docling berubah — `format_options` harus pakai `PdfFormatOption`.
-**Solusi:** Perbarui ke kode terbaru. Fix membungkus options dengan `PdfFormatOption(pipeline_options=...)`.
-
----
-
-#### Masalah: `Unsupported format: .docx`
-
-**Penyebab:** Handler untuk file DOCX belum ada.
-**Solusi:** Perbarui ke kode terbaru. Fix menambahkan method `parse_generic()` untuk format non-PDF.
-
----
-
-#### Masalah: Ekspor tabel crash dengan `TypeError: sequence item 1: expected str instance, list found`
-
-**Penyebab:** PDF mengandung tabel dengan sel bertingkat/gabung.
-**Solusi:** Perbarui ke kode terbaru. Fix menambahkan helper `cell_str()` untuk meratakan nested values.
-
----
-
-#### Masalah: Template output mengandung `{{ title }}` literal, bukan nilai sebenarnya
-
-**Penyebab:** Ketidakcocokan engine rendering template.
-**Solusi:** Perbarui ke kode terbaru. Fix mengganti `string.Template` dengan `str.replace()` langsung.
-
----
-
-#### Masalah: Spellcheck menampilkan ribuan pesan "Bloom filter library not available"
-
-**Penyebab:** Paket `bloom_filter2` tidak terinstall, menyebabkan log spam.
-**Solusi:** Sudah diperbaiki di versi terbaru. Sekarang log hanya sekali di level DEBUG. Untuk install library (opsional, agar spellcheck lebih cepat):
-```bash
-pip install bloom_filter2
-```
-
----
-
-#### Masalah: Jendela aplikasi tidak muncul
+### Spellcheck tidak berjalan
 
 **Periksa:**
-```bash
-# 1. Apakah Python berjalan?
-python3 --version
-
-# 2. Apakah PySide6 terinstall?
-python3 -c "from PySide6.QtWidgets import QApplication; print('OK')"
-
-# 3. Jalankan dengan logging verbose
-python -m legal_md_converter.main 2>&1 | head -20
-```
-
-**Perbaikan umum:**
-- Di Wayland: `export QT_QPA_PLATFORM=wayland`
-- Di server tanpa layar: Memerlukan display X11/Wayland
+1. File `assets/kbbi/kbbi.db` harus ada (±4.3 MB)
+2. Dokumen harus sudah dikonversi terlebih dahulu
+3. Opsi *"Periksa ejaan otomatis"* aktif di Pengaturan
 
 ---
 
-#### Masalah: Parsing sangat lambat (3+ menit)
+### Klik typo di panel ejaan tidak menavigasi ke teks
 
-**Penyebab:** Pertama kali menjalankan akan mengunduh model OCR (~50 MB). Setelahnya lebih cepat.
-**Solusi:** Tunggu sampai pertama kali selesai. Model akan di-cache untuk penggunaan selanjutnya. Untuk PDF berbasis teks (bukan scan), parsing harus di bawah 5 detik.
+**Solusi:** Pastikan konversi sudah selesai dan hasil terlihat di panel kanan sebelum menggunakan panel ejaan.
 
 ---
 
-#### Masalah: Spellcheck tidak menemukan kesalahan apa pun
+### Jendela tidak muncul (Linux Wayland)
 
-**Kemungkinan penyebab:**
-1. Database KBBI tidak ditemukan → Cek `assets/kbbi/kbbi.db` ada (harusnya 4.3 MB, 71,093 kata)
-2. Dokumen belum dikonversi → Spellcheck hanya bekerja pada markdown yang sudah dikonversi
-3. Teks sudah benar → Tidak ada typo yang ditemukan!
-
-**Verifikasi:**
 ```bash
-python3 -c "
-from legal_md_converter.engine.document_service import DocumentService
-svc = DocumentService()
-print(f'Spellchecker siap: {svc.is_spell_checker_ready()}')
-svc.close()
-"
+export QT_QPA_PLATFORM=wayland
+python src/legal_md_converter/main.py
 ```
 
 ---
 
-## Getting Help / Mendapatkan Bantuan
+### Melihat Log Aplikasi
 
-**English:** If you encounter an issue not covered here, please:
-- Check the log file: `~/.local/share/LegalMDConverter/Logs/legal-md-converter.log`
-- Open an issue on GitHub with the error message and log output
+Log tersimpan otomatis di:
 
-**Bahasa Indonesia:** Jika menemui masalah yang tidak tercakup di sini, silakan:
-- Periksa file log: `~/.local/share/LegalMDConverter/Logs/legal-md-converter.log`
-- Buka issue di GitHub dengan pesan error dan output log
+| OS | Lokasi |
+|----|--------|
+| Windows | `%LOCALAPPDATA%\Legal-MD-Team\LegalMDConverter\Logs\legal-md-converter.log` |
+| macOS | `~/Library/Application Support/LegalMDConverter/Logs/legal-md-converter.log` |
+| Linux | `~/.local/share/legal_md_converter/logs/legal-md-converter.log` |
 
 ---
 
-*Dokumen ini akan diperbarui seiring perkembangan aplikasi.*
+## Peringatan Penggunaan
+
+Mohon periksa kembali hasil olah kata/kalimat sebelum digunakan. Jika dokumen bersumber dari hasil OCR, kemungkinan akan banyak tipo dan pemenggalan kata/kalimat yang tidak sesuai. Hasil di luar tanggung jawab pengembang. Terima kasih.
+
+---
+
+*Dokumen ini diperbarui seiring perkembangan aplikasi.*

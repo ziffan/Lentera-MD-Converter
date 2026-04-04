@@ -84,7 +84,39 @@ def get_hidden_imports() -> list[str]:
         'docling.datamodel.pipeline_options',
         # Database
         'sqlite3',
+        # importlib.metadata
+        'importlib.metadata',
     ]
+
+
+def get_copy_metadata() -> list[str]:
+    """Packages that call importlib.metadata.version() at import time."""
+    pkgs = [
+        'docling',
+        'docling-core',
+        'docling-ibm-models',
+        'docling-parse',
+        'huggingface-hub',
+        'transformers',
+        'tokenizers',
+    ]
+    available = []
+    from importlib.metadata import packages_distributions
+    installed = packages_distributions()
+    for pkg in pkgs:
+        # normalise: pip uses dashes, metadata keys may use underscores
+        key = pkg.replace('-', '_')
+        if key in installed or pkg.replace('_', '-') in [p for p in installed]:
+            available.append(pkg)
+        else:
+            # try directly
+            try:
+                from importlib.metadata import distribution
+                distribution(pkg)
+                available.append(pkg)
+            except Exception:
+                pass
+    return available
 
 
 def check_dependencies() -> None:
@@ -120,9 +152,25 @@ def build(onedir: bool = False) -> None:
         separator = ';' if platform.system() == 'Windows' else ':'
         args.extend(['--add-data', f'{src}{separator}{dest}'])
     
+    # Kumpulkan semua submodul + data + metadata paket yang tidak terdeteksi otomatis
+    for pkg in [
+        'docling',        # submodul + entry points (docling.models.plugins)
+        'docling_parse',  # pdf_resources/ — KRITIS untuk konversi PDF
+        'docling_core',   # JSON schemas
+        'pypdfium2',      # backend PDF alternatif
+        'rapidocr',       # OCR engine (dipilih otomatis oleh OcrAutoOptions)
+        'cv2',            # OpenCV untuk image processing
+        'lxml',           # XML/HTML parser
+    ]:
+        args.extend(['--collect-all', pkg])
+
     # Add hidden imports
     for imp in get_hidden_imports():
         args.extend(['--hidden-import', imp])
+
+    # Copy package metadata for packages using importlib.metadata.version()
+    for pkg in get_copy_metadata():
+        args.extend(['--copy-metadata', pkg])
     
     # Add main script
     args.append('src/legal_md_converter/main.py')

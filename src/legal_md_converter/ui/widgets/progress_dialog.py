@@ -40,6 +40,7 @@ class ProgressDialog(QDialog):
     update_message = Signal(str)
     update_detail = Signal(str)
     operation_complete = Signal()
+    operation_failed = Signal()
     
     def __init__(
         self,
@@ -176,6 +177,7 @@ class ProgressDialog(QDialog):
         self.update_message.connect(self._on_update_message)
         self.update_detail.connect(self._on_update_detail)
         self.operation_complete.connect(self._on_complete)
+        self.operation_failed.connect(self._on_failed)
     
     @Slot(int, int)
     def _on_update_progress(self, current: int, total: int) -> None:
@@ -208,31 +210,66 @@ class ProgressDialog(QDialog):
     
     @Slot()
     def _on_complete(self) -> None:
-        """Handle operation completion."""
-        self.progress_bar.setValue(100)
-        self.progress_bar.setStyleSheet("""
-            QProgressBar {
-                border: 1px solid #cccccc;
-                border-radius: 4px;
-                text-align: center;
-                height: 25px;
-                background-color: #f5f5f5;
-            }
-            QProgressBar::chunk {
-                background-color: #4CAF50;
-                border-radius: 3px;
-            }
-        """)
-        
-        self.message_label.setText("Operation completed successfully!")
-        
-        # Enable close button, disable cancel
-        self.close_button.setEnabled(True)
-        
-        if self._cancelable and hasattr(self, 'cancel_button'):
-            self.cancel_button.setEnabled(False)
-        
+        """Handle operation completion (success)."""
+        self._finish(success=True)
         logger.info("Progress dialog: operation complete")
+
+    def _finish(self, success: bool = True) -> None:
+        """Shared finish logic for success and failure."""
+        if success:
+            self.progress_bar.setValue(100)
+            self.progress_bar.setStyleSheet("""
+                QProgressBar {
+                    border: 1px solid #cccccc;
+                    border-radius: 4px;
+                    text-align: center;
+                    height: 25px;
+                    background-color: #f5f5f5;
+                }
+                QProgressBar::chunk {
+                    background-color: #4CAF50;
+                    border-radius: 3px;
+                }
+            """)
+            self.message_label.setText("Konversi selesai.")
+        else:
+            self.progress_bar.setStyleSheet("""
+                QProgressBar {
+                    border: 1px solid #cccccc;
+                    border-radius: 4px;
+                    text-align: center;
+                    height: 25px;
+                    background-color: #f5f5f5;
+                }
+                QProgressBar::chunk {
+                    background-color: #f44336;
+                    border-radius: 3px;
+                }
+            """)
+            self.message_label.setText(
+                "Konversi gagal. Tutup popup ini, lalu coba lagi atau hubungi pengembang."
+            )
+
+        # Aktifkan Close, ubah Cancel menjadi Tutup agar tetap bisa diklik
+        self.close_button.setEnabled(True)
+        if self._cancelable and hasattr(self, 'cancel_button'):
+            self.cancel_button.setText("Tutup")
+            self.cancel_button.setEnabled(True)
+            self.cancel_button.clicked.disconnect()
+            self.cancel_button.clicked.connect(self.close)
+            self.cancel_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #607D8B;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 8px 20px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #455A64;
+                }
+            """)
     
     def set_progress(self, current: int, total: int) -> None:
         """
@@ -263,8 +300,18 @@ class ProgressDialog(QDialog):
         self.update_detail.emit(detail)
     
     def complete(self) -> None:
-        """Mark operation as complete (thread-safe via signal)."""
+        """Mark operation as complete/success (thread-safe via signal)."""
         self.operation_complete.emit()
+
+    def fail(self) -> None:
+        """Mark operation as failed (thread-safe via signal)."""
+        self.operation_failed.emit()
+
+    @Slot()
+    def _on_failed(self) -> None:
+        """Handle operation failure."""
+        self._finish(success=False)
+        logger.info("Progress dialog: operation failed")
     
     def _on_cancel(self) -> None:
         """Handle cancel button click."""

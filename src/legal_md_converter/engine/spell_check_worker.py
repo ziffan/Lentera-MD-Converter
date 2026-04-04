@@ -172,25 +172,19 @@ class SpellCheckWorker(QThread):
     
     def _find_word_position(self, word: str, all_words: List[str]) -> int:
         """
-        Find approximate character position of word in text.
-        
+        Find the actual character position of a word in the original text.
+
         Args:
             word: Word to find
-            all_words: List of all words
-            
+            all_words: List of all words (unused, kept for API compatibility)
+
         Returns:
-            int: Approximate character position
+            int: Character start position of the word in self._text, or 0
         """
-        # Simple position estimation
-        target_lower = word.lower()
-        pos = 0
-        
-        for w in all_words:
-            if w.lower() == target_lower:
-                return pos
-            pos += len(w) + 1  # +1 for space
-        
-        return 0
+        import re
+        pattern = r'\b' + re.escape(word) + r'\b'
+        match = re.search(pattern, self._text, re.IGNORECASE)
+        return match.start() if match else 0
     
     def _get_context(self, word: str, all_words: List[str], radius: int = 3) -> str:
         """

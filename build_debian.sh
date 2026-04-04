@@ -1,101 +1,162 @@
 #!/bin/bash
-# build_debian.sh - Build .deb package for Lentera MD
-# Requires: dpkg-dev, fakeroot
+# build_debian.sh — Build paket .deb untuk Lentera MD (Debian/Ubuntu)
+#
+# Prasyarat:
+#   - dpkg-dev, fakeroot: sudo apt install dpkg-dev fakeroot
+#   - Build PyInstaller terlebih dahulu:
+#       python build_app.py --onedir
+#     Output ada di: dist/linux/LenteraMD/
+#
+# Cara pakai:
+#   chmod +x build_debian.sh && ./build_debian.sh
+#
+# Output: dist/lentera-md_1.0.0_amd64.deb
 
 set -e
 
 APP_NAME="lentera-md"
+APP_DISPLAY="Lentera MD"
+APP_EXE="LenteraMD"
 VERSION="1.0.0"
 DEBIAN_DIR="debian/${APP_NAME}"
+BUILD_DIR="dist/linux/${APP_EXE}"
 
 echo "============================================================"
-echo "Building ${APP_NAME} ${VERSION} .deb package"
+echo "Building ${APP_DISPLAY} ${VERSION} — paket .deb"
 echo "============================================================"
 
-# Clean previous build
+# --- Cek build PyInstaller ---
+if [ ! -d "${BUILD_DIR}" ]; then
+    echo "ERROR: Build PyInstaller tidak ditemukan di: ${BUILD_DIR}"
+    echo "Jalankan terlebih dahulu:"
+    echo "  python build_app.py --onedir"
+    exit 1
+fi
+
+# --- Bersihkan build sebelumnya ---
 rm -rf debian/
 
-# Create directory structure
+# --- Buat struktur direktori paket ---
 echo ""
-echo "[1/4] Creating package structure..."
+echo "[1/4] Membuat struktur paket..."
 mkdir -p "${DEBIAN_DIR}/DEBIAN"
+mkdir -p "${DEBIAN_DIR}/opt/${APP_NAME}"
 mkdir -p "${DEBIAN_DIR}/usr/bin"
 mkdir -p "${DEBIAN_DIR}/usr/share/applications"
 mkdir -p "${DEBIAN_DIR}/usr/share/icons/hicolor/256x256/apps"
 mkdir -p "${DEBIAN_DIR}/usr/share/doc/${APP_NAME}"
 
-# Copy executable
-echo "[2/4] Copying files..."
-if [ -d "dist/linux" ]; then
-    cp -r dist/linux/* "${DEBIAN_DIR}/usr/"
-else
-    # Fallback: copy source for pip install
-    echo "⚠️  No dist/linux found. Building with pip first..."
-    pip install . --target "${DEBIAN_DIR}/usr/lib/python3/dist-packages/${APP_NAME}"
-    cat > "${DEBIAN_DIR}/usr/bin/${APP_NAME}" << 'WRAPPER'
+# --- Salin file aplikasi ---
+echo "[2/4] Menyalin file aplikasi..."
+
+# Salin seluruh build PyInstaller ke /opt/lentera-md/
+cp -r "${BUILD_DIR}/." "${DEBIAN_DIR}/opt/${APP_NAME}/"
+
+# Buat symlink di /usr/bin agar bisa dijalankan dari terminal
+cat > "${DEBIAN_DIR}/usr/bin/${APP_NAME}" << EOF
 #!/bin/bash
-exec python3 -m legal_md_converter.main "$@"
-WRAPPER
-    chmod +x "${DEBIAN_DIR}/usr/bin/${APP_NAME}"
+exec /opt/${APP_NAME}/${APP_EXE} "\$@"
+EOF
+chmod 755 "${DEBIAN_DIR}/usr/bin/${APP_NAME}"
+
+# Desktop file
+if [ -f "legal-md-converter.desktop" ]; then
+    sed "s|Exec=lentera-md|Exec=/opt/${APP_NAME}/${APP_EXE}|g" \
+        legal-md-converter.desktop \
+        > "${DEBIAN_DIR}/usr/share/applications/${APP_NAME}.desktop"
+else
+    cat > "${DEBIAN_DIR}/usr/share/applications/${APP_NAME}.desktop" << EOF
+[Desktop Entry]
+Name=${APP_DISPLAY}
+Comment=Konversi dokumen hukum Indonesia ke Markdown
+Exec=/opt/${APP_NAME}/${APP_EXE} %F
+Icon=${APP_NAME}
+Terminal=false
+Type=Application
+Categories=Office;Utility;
+MimeType=application/pdf;text/plain;application/vnd.openxmlformats-officedocument.wordprocessingml.document;
+Keywords=legal;document;markdown;converter;indonesia;hukum;lentera;
+StartupWMClass=LenteraMD
+EOF
 fi
 
-# Copy desktop file
-cp legal-md-converter.desktop "${DEBIAN_DIR}/usr/share/applications/${APP_NAME}.desktop"
-
-# Copy icon
+# Icon
 if [ -f "assets/icons/app_icon.png" ]; then
-    cp assets/icons/app_icon.png "${DEBIAN_DIR}/usr/share/icons/hicolor/256x256/apps/${APP_NAME}.png"
+    cp "assets/icons/app_icon.png" \
+       "${DEBIAN_DIR}/usr/share/icons/hicolor/256x256/apps/${APP_NAME}.png"
 fi
 
-# Copy assets
-cp -r assets "${DEBIAN_DIR}/usr/share/${APP_NAME}/" 2>/dev/null || true
+# Dokumentasi
+if [ -f "README.md" ]; then
+    cp "README.md" "${DEBIAN_DIR}/usr/share/doc/${APP_NAME}/"
+fi
 
-# Create control file
-echo "[3/4] Creating control file..."
+# --- Buat control file ---
+echo "[3/4] Membuat metadata paket..."
+
+# Hitung ukuran paket
+INSTALLED_SIZE=$(du -sk "${DEBIAN_DIR}/opt/${APP_NAME}" | cut -f1)
+
 cat > "${DEBIAN_DIR}/DEBIAN/control" << EOF
 Package: ${APP_NAME}
 Version: ${VERSION}
 Section: utils
 Priority: optional
 Architecture: amd64
-Depends: libc6, libstdc++6, libglib2.0-0, libgl1, fontconfig
+Installed-Size: ${INSTALLED_SIZE}
+Depends: libc6 (>= 2.17), libstdc++6 (>= 9), libglib2.0-0, libgl1, fontconfig, libxcb-xinerama0, libxcb-icccm4, libxcb-image0, libxcb-keysyms1, libxcb-render-util0
 Maintainer: Lentera MD Team <team@lenteramd.app>
-Description: Convert Indonesian legal documents to Markdown
- A desktop application for converting Indonesian legal PDFs and
- TXT documents to structured Markdown format with built-in
- KBBI spellchecking.
+Homepage: https://github.com/ziffan/Lentera-MD-Converter
+Description: Konversi dokumen hukum Indonesia ke Markdown
+ Aplikasi desktop untuk mengonversi dokumen hukum Indonesia
+ (PDF, DOCX, DOC, TXT, RTF) ke format Markdown, dilengkapi
+ pemeriksaan ejaan berbasis KBBI dengan 71.093 kata.
+ .
+ Fitur utama:
+  - Multi-format: PDF, DOCX, DOC, TXT, RTF
+  - Drag & Drop
+  - Pemeriksaan ejaan KBBI
+  - Preview dapat diedit
+  - Cross-platform (Windows, macOS, Linux)
 EOF
 
-# Create postinst script
+# postinst — update cache setelah install
 cat > "${DEBIAN_DIR}/DEBIAN/postinst" << 'EOF'
 #!/bin/bash
 set -e
 if [ "$1" = "configure" ]; then
     update-desktop-database -q 2>/dev/null || true
-    gtk-update-icon-cache -q /usr/share/icons/hicolor 2>/dev/null || true
+    gtk-update-icon-cache -qf /usr/share/icons/hicolor 2>/dev/null || true
 fi
 EOF
 chmod 755 "${DEBIAN_DIR}/DEBIAN/postinst"
 
-# Create postrm script
+# postrm — update cache setelah hapus
 cat > "${DEBIAN_DIR}/DEBIAN/postrm" << 'EOF'
 #!/bin/bash
 set -e
-if [ "$1" = "remove" ]; then
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     update-desktop-database -q 2>/dev/null || true
-    gtk-update-icon-cache -q /usr/share/icons/hicolor 2>/dev/null || true
+    gtk-update-icon-cache -qf /usr/share/icons/hicolor 2>/dev/null || true
 fi
 EOF
 chmod 755 "${DEBIAN_DIR}/DEBIAN/postrm"
 
-# Build package
-echo "[4/4] Building .deb package..."
+# --- Build paket .deb ---
+echo "[4/4] Membangun paket .deb..."
 mkdir -p dist
-dpkg-deb --build "${DEBIAN_DIR}" "dist/${APP_NAME}_${VERSION}_amd64.deb"
+DEB_PATH="dist/${APP_NAME}_${VERSION}_amd64.deb"
+dpkg-deb --build "${DEBIAN_DIR}" "${DEB_PATH}"
 
 echo ""
 echo "============================================================"
-echo "Build complete!"
-echo "  Package: dist/${APP_NAME}_${VERSION}_amd64.deb"
-echo "  Install: sudo dpkg -i dist/${APP_NAME}_${VERSION}_amd64.deb"
+echo "Selesai!"
+echo "  Paket: ${DEB_PATH}"
+echo ""
+echo "Cara install:"
+echo "  sudo dpkg -i ${DEB_PATH}"
+echo "  sudo apt-get install -f   # jika ada dependensi yang kurang"
+echo ""
+echo "Cara hapus:"
+echo "  sudo apt remove ${APP_NAME}"
 echo "============================================================"

@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QVBoxLayout,
+    QHBoxLayout,
     QWidget,
     QDockWidget,
     QGroupBox,
@@ -28,9 +29,11 @@ from PySide6.QtWidgets import (
     QComboBox,
     QLabel,
     QPushButton,
+    QDialog,
+    QDialogButtonBox,
 )
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QAction, QKeySequence, QDragEnterEvent, QDropEvent
+from PySide6.QtCore import Qt, QSize, QUrl
+from PySide6.QtGui import QAction, QKeySequence, QDragEnterEvent, QDropEvent, QPixmap, QDesktopServices
 
 from legal_md_converter.ui.widgets.file_drop_widget import FileDropWidget
 from legal_md_converter.ui.widgets.document_preview import DocumentPreview
@@ -100,7 +103,8 @@ class MainWindow(QMainWindow):
         self.splitter.setSizes([420, 980])
         
         main_layout.addWidget(self.splitter)
-        
+
+
         # Accept drops on the main window
         self.setAcceptDrops(True)
     
@@ -121,12 +125,12 @@ class MainWindow(QMainWindow):
         file_menu.addAction(self.action_open_folder)
         
         file_menu.addSeparator()
-        
-        self.action_export = QAction('&Export Markdown...', self)
-        self.action_export.setShortcut(QKeySequence.StandardKey.Save)
-        self.action_export.setStatusTip('Export converted markdown')
-        file_menu.addAction(self.action_export)
-        
+
+        self.action_save = QAction('&Save Markdown...', self)
+        self.action_save.setShortcut(QKeySequence.StandardKey.Save)
+        self.action_save.setStatusTip('Simpan hasil konversi ke file Markdown')
+        file_menu.addAction(self.action_save)
+
         file_menu.addSeparator()
         
         self.action_check_deps = QAction('Check &Dependencies', self)
@@ -197,7 +201,7 @@ class MainWindow(QMainWindow):
         # Add actions to toolbar
         toolbar.addAction(self.action_open)
         toolbar.addAction(self.action_convert)
-        toolbar.addAction(self.action_export)
+        toolbar.addAction(self.action_save)
         toolbar.addSeparator()
         toolbar.addAction(self.action_clear)
     
@@ -296,7 +300,7 @@ class MainWindow(QMainWindow):
         """Connect UI signals to handlers."""
         self.action_open.triggered.connect(self._on_open_files)
         self.action_open_folder.triggered.connect(self._on_open_folder)
-        self.action_export.triggered.connect(self._on_export)
+        self.action_save.triggered.connect(self.document_preview._on_save_markdown)
         self.action_exit.triggered.connect(self.close)
         self.action_clear.triggered.connect(self._on_clear)
         self.action_convert.triggered.connect(self._on_convert)
@@ -375,6 +379,7 @@ class MainWindow(QMainWindow):
         self.parser_worker.parsing_complete.connect(self._on_parsing_complete)
         self.parser_worker.error_occurred.connect(self._on_parse_error)
         self.parser_worker.page_progress.connect(self._on_page_progress)
+        self.parser_worker.log_message.connect(self._on_parse_log)
         
         # Connect cancel button
         self.progress_dialog.cancel_button.clicked.connect(self.parser_worker.cancel)
@@ -515,15 +520,104 @@ class MainWindow(QMainWindow):
         self._start_parsing(files)
     
     def _on_about(self) -> None:
-        """Handle about action."""
-        QMessageBox.about(
-            self,
-            'About Lentera MD',
-            '<h2>Lentera MD 1.0.0</h2>'
-            '<p>Aplikasi desktop cross-platform untuk mengonversi '
-            'dokumen hukum ke format Markdown.</p>'
-            '<p>Dibangun dengan PySide6 dan Docling.</p>'
+        """Handle about action — custom dialog with logo and links."""
+        dlg = QDialog(self)
+        dlg.setWindowTitle('Tentang Lentera MD')
+        dlg.setFixedWidth(460)
+
+        layout = QVBoxLayout(dlg)
+        layout.setSpacing(12)
+        layout.setContentsMargins(24, 24, 24, 20)
+
+        # Logo
+        logo_label = QLabel()
+        icon_path = Path(__file__).parent.parent.parent.parent / 'assets' / 'icons' / 'app_icon.png'
+        if icon_path.exists():
+            pixmap = QPixmap(str(icon_path)).scaled(
+                120, 120,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+            logo_label.setPixmap(pixmap)
+        logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(logo_label)
+
+        # App name & version
+        name_label = QLabel('<h2 style="margin:0">Lentera MD</h2>')
+        name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(name_label)
+
+        version_label = QLabel('<p style="color:#666;margin:0">Versi 1.0.0</p>')
+        version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(version_label)
+
+        # Description
+        desc = QLabel(
+            '<p style="text-align:center;color:#444">'
+            'Aplikasi desktop <i>cross-platform</i> untuk mengonversi<br>'
+            'dokumen hukum Indonesia ke format Markdown.<br>'
+            'Dilengkapi pemeriksaan ejaan KBBI.</p>'
         )
+        desc.setWordWrap(True)
+        desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(desc)
+
+        # Separator line
+        sep = QLabel()
+        sep.setFixedHeight(1)
+        sep.setStyleSheet('background:#e0e0e0;')
+        layout.addWidget(sep)
+
+        # Links
+        links_label = QLabel(
+            '<p style="text-align:center">'
+            '<b>Tautan</b><br>'
+            '<a href="https://github.com/ziffan/Lentera-MD-Converter">GitHub — Lentera MD Converter</a><br><br>'
+            '<b>Dukung pengembangan:</b><br>'
+            '<a href="https://saweria.co/kampusmerahdeveloper">Saweria — Kampus Merah Developer</a><br>'
+            '<a href="https://ko-fi.com/kampusmerahdev">Ko-fi — Kampus Merah Dev</a>'
+            '</p>'
+        )
+        links_label.setOpenExternalLinks(True)
+        links_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        links_label.setTextFormat(Qt.TextFormat.RichText)
+        links_label.setStyleSheet('QLabel { font-size: 13px; }')
+        layout.addWidget(links_label)
+
+        # Separator line 2
+        sep2 = QLabel()
+        sep2.setFixedHeight(1)
+        sep2.setStyleSheet('background:#e0e0e0;')
+        layout.addWidget(sep2)
+
+        # Disclaimer
+        disclaimer_label = QLabel(
+            '<p style="text-align:center;color:#795548;font-size:11px">'
+            '<b>&#9888; Peringatan</b><br>'
+            'Mohon periksa kembali hasil olah kata/kalimat sebelum digunakan.<br>'
+            'Jika dokumen bersumber dari hasil OCR, kemungkinan akan banyak tipo<br>'
+            'dan pemenggalan kata/kalimat yang tidak sesuai.<br>'
+            'Hasil di luar tanggung jawab pengembang. Terima kasih.'
+            '</p>'
+        )
+        disclaimer_label.setWordWrap(True)
+        disclaimer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(disclaimer_label)
+
+        # Built with
+        tech_label = QLabel(
+            '<p style="text-align:center;color:#888;font-size:11px">'
+            'Dibangun dengan PySide6, Docling, dan KBBI SQLite</p>'
+        )
+        tech_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(tech_label)
+
+        # Close button
+        btn_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        btn_box.rejected.connect(dlg.accept)
+        layout.addWidget(btn_box)
+
+        dlg.exec()
     
     def _on_check_dependencies(self) -> None:
         """Handle check dependencies action."""
@@ -647,21 +741,25 @@ class MainWindow(QMainWindow):
         failed_count = len(results) - parsed_count
 
         if self.progress_dialog:
-            self.progress_dialog.complete()
+            if parsed_count == 0 and failed_count > 0:
+                self.progress_dialog.fail()
+            else:
+                self.progress_dialog.complete()
 
         self.status_bar.showMessage(
             f'Selesai: {parsed_count} berhasil, {failed_count} gagal'
         )
 
-        # Update preview with first parsed document
+        # Update preview with first parsed document (use proper converted markdown)
         first_parsed_file = None
         for file_path, content in results.items():
             if content:
-                markdown = content.raw_text
+                try:
+                    doc_info = self.document_service.convert_to_markdown(file_path)
+                    markdown = doc_info.markdown or content.raw_text
+                except Exception:
+                    markdown = content.raw_text
                 self.document_preview.set_content(markdown, Path(file_path).name)
-
-                # Convert to markdown in service
-                self.document_service.convert_to_markdown(file_path)
                 first_parsed_file = file_path
                 break
 
@@ -710,6 +808,11 @@ class MainWindow(QMainWindow):
 
         self.status_bar.showMessage('Memeriksa ejaan...')
     
+    def _on_parse_log(self, message: str) -> None:
+        """Forward worker log messages to the progress dialog detail log."""
+        if self.progress_dialog:
+            self.progress_dialog.add_detail(message)
+
     def _on_parse_error(self, error_message: str) -> None:
         """Handle parsing error."""
         if self.progress_dialog:
@@ -724,14 +827,13 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage('Parsing gagal')
     
     def _on_navigate_to_error(self, start: int, end: int) -> None:
-        """Handle navigation to spelling error."""
-        # TODO: Implement cursor positioning in preview
-        logger.debug(f'Navigate to error: {start}-{end}')
-    
+        """Handle navigation to spelling error in document preview."""
+        self.document_preview.navigate_to_position(start, end)
+
     def _on_replace_word(self, start: int, end: int, new_word: str) -> None:
-        """Handle word replacement in document."""
-        # TODO: Implement text replacement in preview
-        logger.debug(f'Replace word: {start}-{end} -> {new_word}')
+        """Handle word replacement in document preview."""
+        self.document_preview.replace_text_at(start, end, new_word)
+        logger.info(f'Replaced word at {start}-{end} with "{new_word}"')
     
     def closeEvent(self, event) -> None:
         """Handle window close event."""

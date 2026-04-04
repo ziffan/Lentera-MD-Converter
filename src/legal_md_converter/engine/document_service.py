@@ -186,10 +186,16 @@ class DocumentService:
             raise ValueError(f'Document not parsed: {file_path}')
         
         try:
-            markdown = self._exporter.to_markdown(info.content, template)
+            if template:
+                # Apply template formatting via our exporter
+                markdown = self._exporter.to_markdown(info.content, template)
+            else:
+                # Use Docling's native markdown output — it preserves numbering,
+                # tables, and structure better than our secondary re-conversion.
+                markdown = info.content.raw_text or self._exporter.to_markdown(info.content)
             info.markdown = markdown
             info.status = 'converted'
-            
+
             logger.info(f'Converted to markdown: {info.filename} ({len(markdown)} chars)')
         
         except Exception as e:

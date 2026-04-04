@@ -353,16 +353,19 @@ def test_spell_check_worker_creation(app):
     from legal_md_converter.data.kbbi_searcher import KBBISearcher
     import tempfile
     
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
         db_path = Path(tmpdir) / "test.db"
-        
+
         # Create searcher (will create empty DB)
         searcher = KBBISearcher(db_path)
-        
+
         worker = SpellCheckWorker(searcher, "test text")
         assert worker is not None
         assert not worker.is_cancelled()
-        
+
         # Test cancel
         worker.cancel()
         assert worker.is_cancelled()
+
+        # Close DB connection before tempdir cleanup (Windows requires this)
+        searcher.close()

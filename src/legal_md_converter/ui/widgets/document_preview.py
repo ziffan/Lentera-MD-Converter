@@ -137,9 +137,8 @@ class DocumentPreview(QWidget):
         ''')
         layout.addWidget(self.empty_label)
         
-        # Markdown preview area
+        # Markdown preview area (editable so user can fix typos directly)
         self.preview_text = QTextEdit()
-        self.preview_text.setReadOnly(True)
         self.preview_text.setFont(QFont('Consolas', 11))
         self.preview_text.setPlaceholderText('Converted markdown will appear here...')
         layout.addWidget(self.preview_text)
@@ -360,12 +359,65 @@ class DocumentPreview(QWidget):
     def _on_close_tab(self, index: int) -> None:
         """Handle close tab request."""
         self.tab_widget.removeTab(index)
-        
+
         # If no tabs left, show empty state
         if self.tab_widget.count() == 0:
             self.clear_preview()
-        
+
         logger.info(f'Closed tab at index: {index}')
+
+    def navigate_to_position(self, start: int, end: int) -> None:
+        """
+        Scroll to and select the text at the given character positions.
+
+        Args:
+            start: Start character position in the document text
+            end: End character position in the document text
+        """
+        cursor = self.preview_text.textCursor()
+        cursor.setPosition(start)
+        cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
+        self.preview_text.setTextCursor(cursor)
+        self.preview_text.ensureCursorVisible()
+        self.preview_text.setFocus()
+
+    def highlight_typos(self, typos) -> None:
+        """
+        Apply red wavy underline to all detected typo positions.
+
+        Args:
+            typos: List of TypoMatch objects with start_pos/end_pos attributes
+        """
+        # Clear previous typo highlights without wiping user formatting
+        cursor = self.preview_text.textCursor()
+        cursor.select(QTextCursor.SelectionType.Document)
+        clear_fmt = QTextCharFormat()
+        clear_fmt.setUnderlineStyle(QTextCharFormat.UnderlineStyle.NoUnderline)
+        cursor.mergeCharFormat(clear_fmt)
+
+        typo_fmt = QTextCharFormat()
+        typo_fmt.setUnderlineStyle(QTextCharFormat.UnderlineStyle.WaveUnderline)
+        typo_fmt.setUnderlineColor(QColor('#F44336'))
+
+        for typo in typos:
+            c = self.preview_text.textCursor()
+            c.setPosition(typo.start_pos)
+            c.setPosition(typo.end_pos, QTextCursor.MoveMode.KeepAnchor)
+            c.mergeCharFormat(typo_fmt)
+
+    def replace_text_at(self, start: int, end: int, new_word: str) -> None:
+        """
+        Replace text at the given character positions.
+
+        Args:
+            start: Start position of text to replace
+            end: End position of text to replace
+            new_word: Replacement text
+        """
+        cursor = self.preview_text.textCursor()
+        cursor.setPosition(start)
+        cursor.setPosition(end, QTextCursor.MoveMode.KeepAnchor)
+        cursor.insertText(new_word)
 
 
 # Import Path locally to avoid circular import

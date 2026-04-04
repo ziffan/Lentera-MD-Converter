@@ -42,6 +42,7 @@ class DocumentParserWorker(QThread):
     parsing_complete = Signal(object)  # dict[file_path, DocumentContent]
     error_occurred = Signal(str)  # error message
     page_progress = Signal(int, int, str)  # current_page, total_pages, file_name
+    log_message = Signal(str)  # live log lines forwarded to progress dialog
     
     def __init__(
         self,
@@ -57,13 +58,36 @@ class DocumentParserWorker(QThread):
     
     def run(self) -> None:
         """Execute parsing in background thread."""
+        import logging as _logging
+
+        class _SignalLogHandler(_logging.Handler):
+            """Logging handler that forwards records to the log_message signal."""
+            def __init__(self, signal):
+                super().__init__()
+                self._signal = signal
+
+            def emit(self, record):
+                try:
+                    self._signal.emit(self.format(record))
+                except Exception:
+                    pass
+
+        signal_handler = _SignalLogHandler(self.log_message)
+        signal_handler.setLevel(_logging.INFO)
+        signal_handler.setFormatter(_logging.Formatter('%(name)s: %(message)s'))
+
+        # Capture logs from docling and our own modules
+        _target_loggers = ['docling', 'legal_md_converter']
+        for _name in _target_loggers:
+            _logging.getLogger(_name).addHandler(signal_handler)
+
         try:
             total = len(self._file_paths)
             self._results = {}
-            
+
             logger.info(f'Starting document parsing: {total} files')
             self.progress.emit(0, total)
-            
+
             # Initialize parser (async init done synchronously in worker thread)
             import asyncio
             loop = asyncio.new_event_loop()
@@ -71,42 +95,42 @@ class DocumentParserWorker(QThread):
                 loop.run_until_complete(self._parser.initialize())
             finally:
                 loop.close()
-            
+
             for i, file_path in enumerate(self._file_paths):
                 if self._cancelled:
                     logger.info('Parsing cancelled by user')
                     break
-                
+
                 path = Path(file_path)
                 self.progress.emit(i + 1, total)
-                
+
                 logger.info(f'Parsing file {i + 1}/{total}: {path.name}')
-                
+
                 # Parse document
                 content = self._parser.parse(path)
-                
+
                 if content:
                     self._results[file_path] = content
                     self.document_parsed.emit(file_path, content)
-                    
-                    # Estimate page count for PDFs
+
+                    # Emit page count info
                     page_count = content.metadata.get('pages', 1)
-                    self.page_progress.emit(
-                        page_count,
-                        page_count,
-                        path.name
-                    )
+                    self.page_progress.emit(page_count, page_count, path.name)
                 else:
                     logger.warning(f'Failed to parse: {file_path}')
                     self._results[file_path] = None
-            
+
             if not self._cancelled:
                 self.parsing_complete.emit(self._results)
                 logger.info(f'Parsing complete: {len(self._results)} documents')
-        
+
         except Exception as e:
             logger.error(f'Parser worker error: {e}', exc_info=True)
             self.error_occurred.emit(str(e))
+
+        finally:
+            for _name in _target_loggers:
+                _logging.getLogger(_name).removeHandler(signal_handler)
     
     def cancel(self) -> None:
         """Request parsing cancellation."""
@@ -195,3 +219,7 @@ class SingleDocumentWorker(QThread):
     def cancel(self) -> None:
         """Request cancellation."""
         self._cancelled = True
+
+    def is_cancelled(self) -> bool:
+        """Check if worker was cancelled."""
+        return self._cancelled

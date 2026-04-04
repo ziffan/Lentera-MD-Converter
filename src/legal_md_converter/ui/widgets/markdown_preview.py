@@ -166,8 +166,10 @@ class MarkdownPreview(QWidget):
         self.preview_text.setPlainText(markdown)
         self.title_label.setText(f'Pratinjau Markdown - {title}')
         
-        # Update word count
-        word_count = len(markdown.split())
+        # Update word count (exclude markdown syntax tokens like #, *, -, etc.)
+        import re
+        clean_text = re.sub(r'^[#*\->`~]+\s*', '', markdown, flags=re.MULTILINE)
+        word_count = len(clean_text.split())
         self.word_count_label.setText(f'{word_count} kata')
         
         # Apply syntax highlighting

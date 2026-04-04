@@ -1,0 +1,51 @@
+# === Data lokal (tidak diupload) ===
+data_lokal/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+
+# === Virtual environment ===
+venv/
+.venv/
+env/
+ENV/
+
+# === PyInstaller ===
+# LegalMDConverter.spec adalah spec resmi proyek — tidak di-ignore
+# LenteraMD.spec adalah file generated otomatis oleh PyInstaller — di-ignore
+LenteraMD.spec
+dist/
+build/
+debian/
+
+# === Hasil build installer (upload ke GitHub Releases, bukan ke repo) ===
+installer/windows/Output/
+installer/linux/appimagetool-x86_64.AppImage
+
+# === IDE & editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# === Claude Code memory ===
+.claude/
+
+# === Log & cache ===
+*.log
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+coverage.xml
