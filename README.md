@@ -1,5 +1,8 @@
 # Lentera MD
 
+![Lentera MD](assets/logo.png)
+
+
 Aplikasi desktop *cross-platform* untuk mengonversi dokumen hukum Indonesia (PDF, DOCX, DOC, TXT, RTF) ke format Markdown, dilengkapi pemeriksaan ejaan berbasis KBBI.
 
 > **Status:** ✅ Production Ready  
@@ -258,7 +261,6 @@ python src/legal_md_converter/main.py
 - **Donasi Saweria:** https://saweria.co/kampusmerahdeveloper
 - **Donasi Ko-fi:** https://ko-fi.com/kampusmerahdev
 
-![Lentera MD](assets/logo.png)
 
 ---
 
