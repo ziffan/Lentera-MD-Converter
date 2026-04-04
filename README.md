@@ -2,6 +2,9 @@
 
 Aplikasi desktop *cross-platform* untuk mengonversi dokumen hukum Indonesia (PDF, DOCX, DOC, TXT, RTF) ke format Markdown, dilengkapi pemeriksaan ejaan berbasis KBBI.
 
+![Lentera MD](assets/logo.png)
+
+
 > **Status:** ✅ Production Ready  
 > **Dibangun dengan:** PySide6 (Qt6) · Docling (IBM) · RapidOCR · SQLite KBBI
 
@@ -20,6 +23,9 @@ Aplikasi desktop *cross-platform* untuk mengonversi dokumen hukum Indonesia (PDF
 - **Cross-Platform:** Windows, macOS, Linux dengan adapter native masing-masing
 
 ---
+
+![Lentera MD](assets/ss/ss1.png)
+![Lentera MD](assets/ss/ss2.png)
 
 ## Persyaratan
 
@@ -258,7 +264,6 @@ python src/legal_md_converter/main.py
 - **Donasi Saweria:** https://saweria.co/kampusmerahdeveloper
 - **Donasi Ko-fi:** https://ko-fi.com/kampusmerahdev
 
-![Lentera MD](assets/logo.png)
 
 ---
 
